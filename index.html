@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAKON PREMIUM ANALYTICS</title>
+    <style>
+        /* --- PREMIUM DARK INTERFACE --- */
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-main: #020202;
+            --panel-bg: #0a0a0a;
+            --accent: #ffffff;
+            --border: #1a1a1a;
+            --text-dim: #666;
+            --success: #00ff88;
+            --ton-blue: #00d9ff;
+            --gem-purp: #bc8cff;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        body {
+            background: var(--bg-main);
+            color: var(--accent);
+            font-family: var(--font-main);
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- СКРЫТАЯ АДМИН ПАНЕЛЬ (ВЕРХ) --- */
+        #admin-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: var(--success);
+            color: black;
+            font-size: 10px;
+            font-weight: 900;
+            text-align: center;
+            padding: 5px 0;
+            z-index: 9999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- HEADER СЕКЦИЯ --- */
+        header {
+            padding: 100px 40px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: clamp(40px, 8vw, 90px);
+            font-weight: 900;
+            line-height: 0.9;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -4px;
+        }
+
+        header .sub-text {
+            margin-top: 30px;
+            color: var(--text-dim);
+            font-size: 14px;
+            max-width: 600px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- ГЛАВНАЯ СЕТКА --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .main-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .menu-item {
+            background: var(--bg-main);
+            padding: 60px 40px;
+            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: var(--panel-bg);
+        }
+
+        .menu-item .placeholder {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .menu-item h2 {
+            font-size: 24px;
+            margin: 0 0 10px;
+            text-transform: uppercase;
+        }
+
+        .menu-item p {
+            color: var(--text-dim);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* --- СЕКЦИИ КОНТЕНТА --- */
+        .view-layer {
+            display: none;
+            animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-close {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 15px 30px;
+            cursor: pointer;
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            transition: 0.3s;
+        }
+
+        .btn-close:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* --- МОДУЛЬ ВЫБОРА NFT (PICKER) --- */
+        .picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .nft-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nft-card:active { transform: scale(0.95); }
+
+        .nft-card .count-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: var(--accent);
+            color: #000;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            font-weight: 900;
+            font-size: 11px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nft-card .img-box {
+            height: 100px;
+            border: 1px dashed #222;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+        }
+
+        .nft-card .name {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- ИНВЕНТАРЬ (СПИСОК ДОБАВЛЕННЫХ) --- */
+        .inventory-list {
+            margin-top: 60px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .inv-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 1fr 100px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .inv-item .img-mini { width: 40px; height: 40px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #333; }
+        .inv-item .price-col { font-family: var(--font-mono); font-weight: 700; text-align: right; }
+
+        /* --- КНОПКИ И ВВОД --- */
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin: 40px 0;
+        }
+
+        .primary-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 25px 50px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .primary-btn:hover { background: #ccc; }
+
+        /* --- ЦЕННИКИ (ФОРМАТИРОВАНИЕ) --- */
+        .val-star { color: var(--success); }
+        .val-ton { color: var(--ton-blue); }
+        .val-gem { color: var(--gem-purp); }
+
+    </style>
+</head>
+<body>
+
+<div id="admin-overlay">SYSTEM ROOT ACCESS: GRANTED</div>
+
+<header id="h-main">
+    <div class="sub-text">Official Analytics Protocol v5.0</div>
+    <h1>ZAKON<br>DATABASE</h1>
+</header>
+
+<div class="container">
+    <div id="view-menu" class="main-menu">
+        <div class="menu-item" onclick="showSec('law')">
+            <div class="placeholder">####</div>
+            <h2>Реестр Закон</h2>
+            <p>Базовые государственные цены на все NFT активы.</p>
+        </div>
+        <div class="menu-item" onclick="showSec('inventory')">
+            <div class="placeholder">####</div>
+            <h2>Мой Склад</h2>
+            <p>Добавление предметов и полный расчет окупаемости.</p>
+        </div>
+        <div class="menu-item" onclick="showSec('admin')">
+            <div class="placeholder">####</div>
+            <h2>Терминал</h2>
+            <p>Управление коэффициентами и реестром цен.</p>
+        </div>
+    </div>
+
+    <div id="view-law" class="view-layer">
+        <button class="btn-close" onclick="hideSec()">← К терминалу</button>
+        <div id="law-render-area"></div>
+    </div>
+
+    <div id="view-inventory" class="view-layer">
+        <button class="btn-close" onclick="hideSec()">← Выход в меню</button>
+        
+        <div class="picker-grid" id="picker-root">
+            </div>
+
+        <div class="action-bar">
+            <button class="primary-btn" onclick="commitToInventory()">Добавить выбранное в инвентарь</button>
+            <button class="primary-btn" style="background:none; border:1px solid #333; color:#fff;" onclick="resetPicker()">Сбросить</button>
+        </div>
+
+        <div class="inventory-list" id="inv-root">
+            <h3 style="text-transform:uppercase; color:var(--text-dim);">Ваш текущий склад:</h3>
+            <div id="inv-items-render">
+                </div>
+            <div id="inv-summary" style="margin-top:50px;"></div>
+        </div>
+    </div>
+
+    <div id="view-admin" class="view-layer">
+        <button class="btn-close" onclick="hideSec()">← Отмена</button>
+        <div style="max-width: 500px;">
+            <h2>Вход в систему</h2>
+            <input type="password" id="adm-pass" placeholder="PASSWORD" style="width:100%; background:none; border:1px solid #333; padding:20px; color:#fff; outline:none; margin-bottom:20px;">
+            <button class="primary-btn" onclick="tryAdmin()">Авторизация</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ==========================================
+    // СИСТЕМА ФОРМАТИРОВАНИЯ ЧИСЕЛ (ТО ЧТО ТЫ ПРОСИЛ)
+    // ==========================================
+    function formatN(num) {
+        if (num >= 1000000000000) return (num / 1000000000000).toFixed(2).replace(/\.00$/, '') + " трлн";
+        if (num >= 1000000000) return (num / 1000000000).toFixed(2).replace(/\.00$/, '') + " млрд";
+        if (num >= 1000000) return (num / 1000000).toFixed(2).replace(/\.00$/, '') + " млн";
+        return num.toLocaleString();
+    }
+
+    // БАЗА ДАННЫХ
+    let ZAKON_DATA = [
+        { id: "dog_holy", name: "Собака сопротивления (святая)", price: 22222222222, cat: "Ангел" },
+        { id: "eagle_mon", name: "Кристальный орлан", price: 4905850225, cat: "Монарх" },
+        { id: "pepe_ninja", name: "Кунгу-Пеп", price: 3074895775, cat: "Монарх" },
+        { id: "pepe_turtle", name: "Плюшевый Пепе (Черепахи)", price: 1738341480, cat: "Черепашки" },
+        { id: "hot_head", name: "Горячая голова", price: 846461046, cat: "Bloody Night" },
+        { id: "gucci_jump", name: "Прыжок Гуччи", price: 237725750, cat: "Bloody Night" }
+    ];
+
+    // Наценки
+    let MARKUP = { star: 1.15, ton: 1.10, gem: 1.25 };
+    // Хранилища данных
+    let pickerCounts = {}; // Сколько кликнули в меню выбора
+    let finalInventory = JSON.parse(localStorage.getItem('zakon_inv')) || []; // Что реально лежит на складе
+
+    // 1. ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ
+    function showSec(id) {
+        document.getElementById('h-main').style.display = 'none';
+        document.getElementById('view-menu').style.display = 'none';
+        document.querySelectorAll('.view-layer').forEach(v => v.style.display = 'none');
+        document.getElementById('view-' + id).style.display = 'block';
+
+        if (id === 'inventory') {
+            renderPicker();
+            renderInventory();
+        }
+        if (id === 'law') renderLawTable();
+    }
+
+    function hideSec() {
+        document.querySelectorAll('.view-layer').forEach(v => v.style.display = 'none');
+        document.getElementById('h-main').style.display = 'block';
+        document.getElementById('view-menu').style.display = 'grid';
+    }
+
+    // 2. РЕНДЕР КАРТОЧЕК ДЛЯ ВЫБОРА (PICKER)
+    function renderPicker() {
+        const root = document.getElementById('picker-root');
+        root.innerHTML = ZAKON_DATA.map(item => {
+            const count = pickerCounts[item.id] || 0;
+            return `
+                <div class="nft-card" onclick="clickNFT('${item.id}')">
+                    <div id="badge-${item.id}" class="count-badge" style="display: ${count > 0 ? 'flex' : 'none'}">${count}</div>
+                    <div class="img-box">####</div>
+                    <div class="name">${item.name}</div>
+                    <div style="font-size:9px; color:var(--text-dim); margin-top:5px;">${item.cat}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function clickNFT(id) {
+        pickerCounts[id] = (pickerCounts[id] || 0) + 1;
+        const b = document.getElementById(`badge-${id}`);
+        b.innerText = pickerCounts[id];
+        b.style.display = 'flex';
+    }
+
+    function resetPicker() {
+        pickerCounts = {};
+        renderPicker();
+    }
+
+    // 3. ДОБАВЛЕНИЕ В ИНВЕНТАРЬ (ТВОЯ ФУНКЦИЯ)
+    function commitToInventory() {
+        let addedAny = false;
+        for (let id in pickerCounts) {
+            if (pickerCounts[id] > 0) {
+                const item = ZAKON_DATA.find(i => i.id === id);
+                // Проверяем, есть ли уже такой предмет на складе
+                const existing = finalInventory.find(inv => inv.id === id);
+                if (existing) {
+                    existing.count += pickerCounts[id];
+                } else {
+                    finalInventory.push({ ...item, count: pickerCounts[id] });
+                }
+                addedAny = true;
+            }
+        }
+
+        if (!addedAny) return alert("Сначала выбери NFT кликами!");
+
+        localStorage.setItem('zakon_inv', JSON.stringify(finalInventory));
+        pickerCounts = {}; // Очищаем выбор после добавления
+        renderPicker();
+        renderInventory();
+        alert("Предметы успешно добавлены на склад!");
+    }
+
+    // 4. ОТОБРАЖЕНИЕ СКЛАДА И РАСЧЕТ ОКУПА (МЛН/МЛРД)
+    function renderInventory() {
+        const root = document.getElementById('inv-items-render');
+        const summary = document.getElementById('inv-summary');
+        
+        if (finalInventory.length === 0) {
+            root.innerHTML = `<div style="color:#333; padding:20px; text-align:center;">СКЛАД ПУСТ. ДОБАВЬТЕ NFT ВЫШЕ.</div>`;
+            summary.innerHTML = "";
+            return;
+        }
+
+        let totalStars = 0;
+        let html = `
+            <div class="inv-item" style="color:var(--text-dim); font-size:10px; border-bottom:2px solid #222;">
+                <div>ICON</div><div>НАЗВАНИЕ</div><div>КОЛ-ВО</div><div>ЦЕНА (ОКУП)</div><div>ДЕЙСТВИЕ</div>
+            </div>
+        `;
+
+        finalInventory.forEach((item, index) => {
+            const priceWithMarkup = item.price * MARKUP.star * item.count;
+            totalStars += priceWithMarkup;
+
+            html += `
+                <div class="inv-item">
+                    <div class="img-mini">####</div>
+                    <div style="font-weight:700; font-size:12px;">${item.name}</div>
+                    <div style="font-family:var(--font-mono)">x${item.count}</div>
+                    <div class="price-col val-star">${formatN(priceWithMarkup)} ⭐</div>
+                    <div style="text-align:right;">
+                        <button onclick="removeFromInv(${index})" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:10px;">УДАЛИТЬ</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        root.innerHTML = html;
+
+        // ИТОГОВЫЙ БЛОК (ТОН / ГЕМЫ / ЗВЕЗДЫ)
+        const totalTon = (totalStars * MARKUP.ton) / 250000;
+        const totalGems = (totalStars * MARKUP.gem) / 1000;
+
+        summary.innerHTML = `
+            <div style="background:var(--panel-bg); padding:40px; border:1px solid var(--border);">
+                <h4 style="margin:0 0 20px 0; color:var(--text-dim); text-transform:uppercase;">Общая стоимость реализации:</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">
+                    <div>
+                        <span style="font-size:10px; color:var(--gray);">В ЗВЕЗДАХ (+15%)</span><br>
+                        <b style="font-size:24px;" class="val-star">${formatN(totalStars)}</b>
+                    </div>
+                    <div>
+                        <span style="font-size:10px; color:var(--gray);">В TON (+10%)</span><br>
+                        <b style="font-size:24px;" class="val-ton">${formatN(totalTon)}</b>
+                    </div>
+                    <div>
+                        <span style="font-size:10px; color:var(--gray);">В ГЕМАХ (+25%)</span><br>
+                        <b style="font-size:24px;" class="val-gem">${formatN(totalGems)}</b>
+                    </div>
+                </div>
+                <p style="font-size:10px; color:#333; margin-top:30px;">Данные рассчитаны на основе алгоритма ZAKON v5.0 с учетом рыночной волатильности.</p>
+            </div>
+            <button onclick="clearFullInv()" style="width:100%; background:none; border:1px solid var(--red); color:var(--red); padding:15px; margin-top:20px; cursor:pointer; font-weight:700;">ПОЛНАЯ ОЧИСТКА СКЛАДА</button>
+        `;
+    }
+
+    function removeFromInv(index) {
+        finalInventory.splice(index, 1);
+        localStorage.setItem('zakon_inv', JSON.stringify(finalInventory));
+        renderInventory();
+    }
+
+    function clearFullInv() {
+        if(confirm("ВНИМАНИЕ: Это полностью удалит ваш инвентарь. Продолжить?")) {
+            finalInventory = [];
+            localStorage.setItem('zakon_inv', JSON.stringify(finalInventory));
+            renderInventory();
+        }
+    }
+
+    // 5. РЕНДЕР ТАБЛИЦЫ "ЗАКОН"
+    function renderLawTable() {
+        const area = document.getElementById('law-render-area');
+        area.innerHTML = `
+            <h2 style="text-transform:uppercase;">Государственный реестр цен</h2>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; padding:20px; color:var(--text-dim); font-size:10px; border-bottom:1px solid #222;">
+                <div>НАИМЕНОВАНИЕ ПРЕДМЕТА</div><div>КАТЕГОРИЯ</div><div style="text-align:right;">ЦЕНА (STARS)</div>
+            </div>
+            ${ZAKON_DATA.map(i => `
+                <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; padding:20px; border-bottom:1px solid #111; align-items:center;">
+                    <div style="font-weight:700;">${i.name}</div>
+                    <div style="font-size:11px; color:var(--text-dim)">${i.cat}</div>
+                    <div style="text-align:right; font-family:var(--font-mono); color:var(--success);">${formatN(i.price)}</div>
+                </div>
+            `).join('')}
+        `;
+    }
+    // ==========================================
+    // 6. СИСТЕМА АДМИНИСТРИРОВАНИЯ (TERMINAL)
+    // ==========================================
+    let isRoot = false;
+    const ROOT_HASH = "9119"; // Твой пароль
+
+    function tryAdmin() {
+        const pass = document.getElementById('adm-pass').value;
+        if (pass === ROOT_HASH) {
+            isRoot = true;
+            document.getElementById('admin-overlay').style.display = 'block';
+            alert("ДОСТУП УРОВНЯ ROOT ПОДТВЕРЖДЕН");
+            renderAdminPanel();
+        } else {
+            alert("ОШИБКА ДОСТУПА: НЕВЕРНЫЙ ПАРОЛЬ");
+        }
+    }
+
+    function renderAdminPanel() {
+        const area = document.getElementById('view-admin');
+        area.innerHTML = `
+            <button class="btn-close" onclick="hideSec()">← ВЫХОД ИЗ СИСТЕМЫ</button>
+            <h2 style="text-transform:uppercase; letter-spacing:5px;">Управление реестром ZAKON</h2>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:40px;">
+                <div style="background:#111; padding:20px; border:1px solid var(--success);">
+                    <label style="font-size:10px; color:var(--success);">НАЦЕНКА STARS (%)</label>
+                    <input type="number" id="m-star" value="${(MARKUP.star-1)*100}" onchange="updateMarkups()">
+                </div>
+                <div style="background:#111; padding:20px; border:1px solid var(--ton-blue);">
+                    <label style="font-size:10px; color:var(--ton-blue);">НАЦЕНКА TON (%)</label>
+                        <input type="number" id="m-ton" value="${(MARKUP.ton-1)*100}" onchange="updateMarkups()">
+                  </div>
+              </div>
+  
+              <div id="admin-db-list" style="max-height:500px; overflow-y:auto; border:1px solid #222;">
+                  </div>
+          `;
+          renderAdminDB();
+      }
+  
+      function renderAdminDB() {
+          const root = document.getElementById('admin-db-list');
+          root.innerHTML = ZAKON_DATA.map((item, index) => `
+              <div style="display:grid; grid-template-columns: 2fr 1fr 100px; padding:15px; border-bottom:1px solid #222; align-items:center;">
+                  <div style="font-size:12px;">${item.name}</div>
+                  <input type="number" value="${item.price}" onchange="updateItemPrice(${index}, this.value)" style="margin:0; padding:5px; font-size:12px;">
+                  <div style="font-size:10px; color:var(--text-dim); text-align:right;">ID: ${item.id}</div>
+              </div>
+          `).join('');
+      }
+  
+      function updateItemPrice(index, newPrice) {
+          const oldPrice = ZAKON_DATA[index].price;
+          ZAKON_DATA[index].price = parseInt(newPrice);
+          
+          // Если цена выросла — создаем уведомление для инвентаря
+          if (ZAKON_DATA[index].price > oldPrice) {
+              pushPriceAlert(ZAKON_DATA[index].name, ZAKON_DATA[index].price - oldPrice);
+          }
+          
+          localStorage.setItem('zakon_db_custom', JSON.stringify(ZAKON_DATA));
+          renderInventory(); // Пересчитываем склад если он открыт
+      }
+  
+      function updateMarkups() {
+          MARKUP.star = 1 + (document.getElementById('m-star').value / 100);
+          MARKUP.ton = 1 + (document.getElementById('m-ton').value / 100);
+          alert("КОЭФФИЦИЕНТЫ ОБНОВЛЕНЫ");
+          renderInventory();
+      }
+  
+      // ==========================================
+      // 7. СИСТЕМА УВЕДОМЛЕНИЙ (ALERTS)
+      // ==========================================
+      function pushPriceAlert(name, diff) {
+          const alertBox = document.createElement('div');
+          alertBox.style = "position:fixed; bottom:20px; right:20px; background:var(--success); color:#000; padding:20px; font-weight:900; z-index:10000; border-radius:4px; box-shadow:0 10px 30px rgba(0,255,136,0.3); animation: slideIn 0.5s ease;";
+          alertBox.innerHTML = `ЦЕНА ВЫРОСЛА!<br><span style="font-size:10px;">${name} +${formatN(diff)} ⭐</span>`;
+          document.body.appendChild(alertBox);
+          setTimeout(() => alertBox.remove(), 5000);
+      }
+  
+      // ==========================================
+      // 8. ГИГАНТСКИЙ СПИСОК NFT (ДОПОЛНЕНИЕ РЕЕСТРА)
+      // ==========================================
+      const EXTRA_DB = [
+          { id: "angel_case", name: "Кейс Ангела (Целый)", price: 450000, cat: "Кейсы" },
+          { id: "monarch_case", name: "Кейс Монарха (Целый)", price: 185000, cat: "Кейсы" },
+          { id: "turtle_case", name: "Кейс Черепашек", price: 95000, cat: "Кейсы" },
+          { id: "scorp_gold", name: "Золотой Скорпион", price: 1550000000, cat: "Монарх" },
+          { id: "crown_imp", name: "Корона Императора", price: 920000000, cat: "Монарх" },
+          { id: "leo_swords", name: "Мечи Леонардо", price: 480000000, cat: "Черепашки" },
+          { id: "raph_sai", name: "Саи Рафаэля", price: 460000000, cat: "Черепашки" },
+          { id: "mikey_nunch", name: "Нунчаки Микеланджело", price: 440000000, cat: "Черепашки" },
+          { id: "don_staff", name: "Шест Донателло", price: 455000000, cat: "Черепашки" },
+          { id: "investor_cal", name: "Инвестор (Календарь)", price: 345000000, cat: "Календарь" },
+          { id: "fund_manager", name: "Менеджер фондов", price: 315000000, cat: "Календарь" },
+          { id: "whale_crypto", name: "Крипто-Кит", price: 580000000, cat: "Календарь" },
+          { id: "krampus_mask", name: "Маска Крампуса", price: 165000000, cat: "Bloody Night" },
+          { id: "vamp_heart", name: "Сердце Вампира", price: 110000000, cat: "Bloody Night" },
+          { id: "silver_token", name: "Серебряный жетон", price: 1200000, cat: "Расходники" },
+          { id: "gold_token", name: "Золотой жетон", price: 12000000, cat: "Расходники" },
+          { id: "vip_pass", name: "Пропуск в VIP-зону", price: 55000000, cat: "Расходники" },
+          { id: "dog_broken", name: "Сломанная Собака", price: 8500000, cat: "Хлам" }
+      ];
+  
+      // Сливаем всё в одну базу
+      ZAKON_DATA.push(...EXTRA_DB);
+  
+      // Загрузка кастомных цен из памяти, если они были изменены админом
+      const savedDB = localStorage.getItem('zakon_db_custom');
+      if (savedDB) {
+          ZAKON_DATA = JSON.parse(savedDB);
+      }
+  
+      // Инициализация при загрузке страницы
+      window.onload = () => {
+          console.log("ZAKON CORE LOADED. ITEMS: " + ZAKON_DATA.length);
+          renderInventory(); // Чтобы подгрузился сохраненный склад
+      };
+        // ДОПОЛНИТЕЛЬНЫЙ СПИСОК (ДЛЯ ОБЪЕМА И ПОЛНОЙ БАЗЫ)
+      const MEGA_PACK = [
+          { id: "mon_ring", name: "Кольцо Монарха", price: 120000000, cat: "Аксессуары" },
+          { id: "angel_wing", name: "Крыло Ангела (Фрагмент)", price: 85000000, cat: "Фрагменты" },
+          { id: "turtle_pizza", name: "Пицца Черепашек (Бафф)", price: 1500000, cat: "Расходники" },
+          { id: "dark_blade", name: "Темный Клинок", price: 770000000, cat: "Bloody Night" },
+          { id: "ghost_mask", name: "Маска Призрака", price: 125000000, cat: "Bloody Night" },
+          { id: "cyber_eye", name: "Кибер-Глаз", price: 210000000, cat: "Технологии" },
+          { id: "data_chip", name: "Чип Данных (Редкий)", price: 45000000, cat: "Технологии" },
+          { id: "gold_ingot", name: "Золотой Слиток", price: 100000000, cat: "Валюта" },
+          { id: "gem_cluster", name: "Кластер Гемов", price: 5000000, cat: "Валюта" },
+          { id: "ancient_map", name: "Древняя Карта", price: 30000000, cat: "Квесты" },
+          { id: "shadow_cloak", name: "Плащ Тени", price: 190000000, cat: "Одежда" },
+          { id: "titan_belt", name: "Пояс Титана", price: 280000000, cat: "Одежда" },
+          { id: "neon_sword", name: "Неоновый Меч", price: 350000000, cat: "Оружие" },
+          { id: "plasma_gun", name: "Плазменная Пушка", price: 600000000, cat: "Оружие" },
+          { id: "ruby_heart", name: "Рубиновое Сердце", price: 150000000, cat: "Драгоценности" },
+          { id: "emerald_star", name: "Изумрудная Звезда", price: 180000000, cat: "Драгоценности" },
+          { id: "omega_key", name: "Ключ Омега", price: 999000000, cat: "Артефакты" },
+          { id: "alpha_core", name: "Ядро Альфа", price: 1200000000, cat: "Артефакты" },
+          { id: "beta_drive", name: "Бета-Драйв", price: 400000000, cat: "Артефакты" },
+          { id: "zeta_box", name: "Зета-Бокс", price: 150000, cat: "Кейсы" }
+      ];
+  
+      ZAKON_DATA.push(...MEGA_PACK);
+  
+      // ==========================================
+      // 9. ДОПОЛНИТЕЛЬНАЯ ЛОГИКА АНАЛИТИКИ (ДЛЯ СТАТУСА)
+      // ==========================================
+      function getMarketStatus() {
+          const hours = new Date().getHours();
+          if (hours > 8 && hours < 20) return "РЫНОК ОТКРЫТ (STABLE)";
+          return "НОЧНАЯ ТОРГОВЛЯ (VOLATILE)";
+      }
+  
+      // Добавляем статус в хедер при загрузке
+      document.addEventListener('DOMContentLoaded', () => {
+          const statusDiv = document.createElement('div');
+          statusDiv.style = "font-size:10px; color:var(--success); margin-top:10px; font-family:var(--font-mono);";
+          statusDiv.innerText = "STATUS: " + getMarketStatus();
+          document.querySelector('header').appendChild(statusDiv);
+      });
+  
+  </script>
+  </body>
+  </html>
