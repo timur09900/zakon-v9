@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFT BATTLE DATABASE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--border:#222;--green:#00ff41;--white:#fff;--gray:#555;--gray2:#333;--text:#e0e0e0;--text2:#888;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--gray2)}
+.page{display:none;min-height:100vh}.page.active{display:block}
+.topbar{padding:16px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:50}
+.topbar-logo{font-size:11px;font-weight:700;color:var(--green);letter-spacing:3px}
+.topbar-user{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--gray)}
+.topbar-nick{color:var(--green);font-weight:700}
+.hero{padding:60px 60px 40px}
+.hero-label{font-size:11px;font-weight:600;color:var(--gray);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-size:clamp(56px,8vw,110px);font-weight:900;line-height:0.9;text-transform:uppercase;letter-spacing:-3px;margin-bottom:20px}
+.hero-status{font-size:12px;font-weight:700;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:48px}
+.divider{height:1px;background:var(--border)}
+.home-cards{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-top:none}
+.hcard{padding:36px 32px;cursor:pointer;border-right:1px solid var(--border);transition:background 0.2s;position:relative}
+.hcard:last-child{border-right:none}
+.hcard:hover{background:var(--bg2)}
+.hcard-hash{font-size:12px;font-weight:700;color:var(--gray);background:var(--bg3);display:inline-block;padding:5px 9px;border:1px solid var(--gray2);margin-bottom:24px;font-family:monospace}
+.hcard-title{font-size:20px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+.hcard-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.hcard-arr{position:absolute;top:36px;right:32px;font-size:16px;color:var(--gray);transition:color 0.2s}
+.hcard:hover .hcard-arr{color:var(--green)}
+.home-menu{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-top:none}
+.hmitem{padding:22px 24px;cursor:pointer;border-right:1px solid var(--border);transition:background 0.2s}
+.hmitem:last-child{border-right:none}
+.hmitem:hover{background:var(--bg2)}
+.hmitem-title{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.hmitem-desc{font-size:11px;color:var(--text2)}
+.inner{padding:48px 60px;min-height:100vh}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--gray);letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:36px;transition:color 0.2s}
+.back:hover{color:var(--white)}
+.ph{font-size:clamp(32px,5vw,64px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:6px;line-height:1}
+.ps{font-size:11px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:36px}
+.hr{height:1px;background:var(--border);margin-bottom:28px}
+.nft-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.nft-bar input,.nft-bar select{background:var(--bg2);border:1px solid var(--border);padding:9px 13px;color:var(--white);font-family:'Inter',sans-serif;font-size:12px;outline:none}
+.nft-bar input{flex:1;min-width:180px}
+.nft-bar input:focus,.nft-bar select:focus{border-color:var(--green)}
+.case-hdr{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px;margin-top:24px}
+.case-hdr:first-child{margin-top:0}
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--border)}
+.ncard{background:var(--bg);padding:18px 14px;cursor:pointer;transition:background 0.15s;text-align:center}
+.ncard:hover{background:var(--bg2)}
+.nimg{width:60px;height:60px;background:var(--bg3);border:1px solid var(--gray2);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gray);font-family:monospace;position:relative;overflow:hidden}
+.nimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.nname{font-size:10px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.3;min-height:28px}
+.nprice{font-size:12px;font-weight:900;color:var(--white)}
+.nprice::before{content:'★ ';color:var(--green)}
+.nprob{font-size:9px;color:var(--gray);margin-top:2px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);margin-bottom:24px}
+.cblock{background:var(--bg2);padding:24px}
+.clbl{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.cinput{width:100%;background:var(--bg3);border:1px solid var(--border);padding:12px 14px;color:var(--white);font-family:'Inter',sans-serif;font-size:18px;font-weight:700;outline:none}
+.cinput:focus{border-color:var(--green)}
+.cres{margin-top:8px;font-size:12px;color:var(--text2);line-height:1.8}
+.cres strong{color:var(--white);font-weight:700}
+.rates-bar{display:flex;gap:20px;flex-wrap:wrap;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);font-size:11px;color:var(--text2)}
+.rates-bar span{color:var(--green);font-weight:700}
+.aitabs{display:flex;border:1px solid var(--border);margin-bottom:20px}
+.aitab{flex:1;padding:12px;text-align:center;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);transition:all 0.2s;border-right:1px solid var(--border)}
+.aitab:last-child{border-right:none}
+.aitab.active{background:var(--green);color:#000}
+.aitab:hover:not(.active){background:var(--bg2);color:var(--white)}
+.aisel,.pplsel{width:100%;background:var(--bg2);border:1px solid var(--border);padding:12px 14px;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;outline:none;margin-bottom:14px;cursor:pointer}
+.mkrow{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.mkrow label{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+.mkinput{background:var(--bg2);border:1px solid var(--border);padding:9px 12px;color:var(--white);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;outline:none;width:110px}
+.aibox{background:var(--bg2);border:1px solid var(--green);padding:22px;display:none;margin-top:14px}
+.aibox.show{display:block}
+.aiboxtitle{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.ailine{font-size:13px;color:var(--text);margin-bottom:7px;line-height:1.6}
+.ailine b{color:var(--white)}
+.advbox{background:var(--bg3);border:1px solid var(--border);padding:18px;margin-top:14px;display:none}
+.advbox.show{display:block}
+.pplcount{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.pplcount label{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+.pplcount input{background:var(--bg2);border:1px solid var(--border);padding:9px 12px;color:var(--white);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;outline:none;width:70px;text-align:center}
+.pplstep{display:flex;gap:10px;padding:12px;background:var(--bg3);margin-bottom:6px;border-left:2px solid var(--green)}
+.pplstepn{font-size:10px;font-weight:700;color:var(--green);min-width:20px}
+.pplstept{font-size:12px;color:var(--text);line-height:1.5}
+.pplstept b{color:var(--white)}
+.pploption{padding:11px 14px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;margin-bottom:5px;transition:border-color 0.2s;font-size:12px}
+.pploption:hover{border-color:var(--green);color:var(--green)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:1px;background:var(--border);margin-bottom:1px}
+.icard{background:var(--bg);padding:14px 10px;cursor:pointer;text-align:center;transition:background 0.15s;position:relative;user-select:none}
+.icard:hover{background:var(--bg2)}
+.icard.sel{background:var(--bg2);outline:1px solid var(--green)}
+.icnt{position:absolute;top:6px;right:6px;background:var(--green);color:#000;font-size:10px;font-weight:900;padding:1px 5px;display:none}
+.icnt.show{display:block}
+.iimg{width:44px;height:44px;background:var(--bg3);border:1px solid var(--gray2);margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gray);font-family:monospace;position:relative;overflow:hidden}
+.iimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.iname{font-size:9px;color:var(--text2);line-height:1.3}
+.ibottom{background:var(--bg2);border:1px solid var(--border);border-top:none;padding:18px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.itotal{font-size:16px;font-weight:900;cursor:pointer}
+.itotal:hover{color:var(--green)}
+.itotallbl{font-size:9px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.tsearch{display:flex;gap:10px;margin-bottom:16px}
+.tsearch input{flex:1;background:var(--bg2);border:1px solid var(--border);padding:11px 14px;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;outline:none}
+.tsearch input:focus{border-color:var(--green)}
+.tulist{background:var(--bg2);border:1px solid var(--border);max-height:180px;overflow-y:auto;margin-bottom:16px;display:none}
+.tuitem{padding:11px 14px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);transition:background 0.15s}
+.tuitem:hover{background:var(--bg3);color:var(--green)}
+.tpanels{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:14px}
+.tpanel{background:var(--bg2);padding:18px}
+.tplbl{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.tnpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:5px}
+.tnchip{padding:6px 7px;background:var(--bg3);border:1px solid var(--border);font-size:10px;cursor:pointer;text-align:center;transition:all 0.15s}
+.tnchip:hover{border-color:var(--green)}
+.tnchip.picked{border-color:var(--green);background:rgba(0,255,65,0.08);color:var(--green)}
+.ndot{width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;margin-left:4px;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.nbox{background:var(--bg2);border:1px solid var(--green);padding:18px;margin-bottom:14px}
+.nboxt{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;margin-bottom:10px;text-transform:uppercase}
+.msgsbox{background:var(--bg2);border:1px solid var(--border);height:400px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.cmsg{display:flex;gap:8px}
+.cav{width:26px;height:26px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0}
+.cbi{flex:1}
+.cmeta{font-size:10px;color:var(--gray);margin-bottom:3px}
+.cmeta .cn{color:var(--green);font-weight:700}
+.ctxt{font-size:12px;color:var(--text);line-height:1.5}
+.csys{text-align:center;font-size:10px;color:var(--gray);padding:3px}
+.cinrow{display:flex;border:1px solid var(--border);border-top:none}
+.cinrow input{flex:1;background:var(--bg2);border:none;padding:12px 14px;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;outline:none}
+.cinrow input::placeholder{color:var(--gray)}
+.urow{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.udot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.udot.off{background:var(--gray)}
+.unick{font-size:13px;font-weight:700;flex:1}
+.utime{font-size:11px;color:var(--gray)}
+.tsect{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.tsectt{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.trow{display:flex;gap:10px;align-items:center;margin-bottom:9px}
+.trow label{font-size:11px;color:var(--text2);width:190px;flex-shrink:0}
+.tinput{flex:1;background:var(--bg3);border:1px solid var(--border);padding:9px 12px;color:var(--white);font-family:'Inter',sans-serif;font-size:12px;outline:none}
+.tinput:focus{border-color:var(--green)}
+.tnrow{display:flex;gap:8px;align-items:center;padding:9px;background:var(--bg3);border:1px solid var(--border);margin-bottom:5px;flex-wrap:wrap}
+.tnnm{font-size:11px;color:var(--text2);flex:1;min-width:140px}
+.tni{background:var(--bg2);border:1px solid var(--border);padding:5px 9px;color:var(--white);font-family:'Inter',sans-serif;font-size:11px;outline:none;width:120px}
+.tni:focus{border-color:var(--green)}
+.tpwrap{display:none;flex-direction:column;gap:7px;padding:9px;background:var(--bg);border:1px solid var(--border);margin-top:5px}
+.tpwrap.show{display:flex}
+.tpprev{width:50px;height:50px;background:var(--bg3);border:1px solid var(--border);object-fit:contain;display:none}
+.tpprev.show{display:block}
+.slrow{display:flex;align-items:center;gap:8px}
+.slrow input[type=range]{flex:1;accent-color:var(--green)}
+.slrow span{font-size:10px;color:var(--text2);min-width:32px}
+/* NEW CASE FORM */
+.newcase-form{background:var(--bg2);border:1px solid var(--green);padding:20px;margin-bottom:20px;display:none}
+.newcase-form.show{display:block}
+.newcase-nft-item{background:var(--bg3);border:1px solid var(--border);padding:12px;margin-bottom:8px;position:relative}
+/* ABOUT PAGE */
+.about-team{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:24px}
+.about-card{background:var(--bg2);padding:32px}
+.about-role{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.about-name{font-size:24px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+.about-tg{font-size:13px;color:var(--text2)}
+.about-tg a{color:var(--green);text-decoration:none}
+.about-tg a:hover{text-decoration:underline}
+/* REGISTER */
+#reg-overlay{position:fixed;inset:0;background:#000;z-index:999;display:flex;align-items:center;justify-content:center}
+#reg-box{width:380px;padding:48px}
+#reg-box .rlbl{font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+#reg-box h2{font-size:44px;font-weight:900;text-transform:uppercase;letter-spacing:-2px;margin-bottom:28px;line-height:1}
+#reg-status{font-size:11px;color:var(--green);letter-spacing:1px;margin-bottom:8px;min-height:16px}
+#reg-box input{width:100%;background:var(--bg2);border:1px solid var(--border);padding:13px 14px;color:var(--white);font-family:'Inter',sans-serif;font-size:15px;outline:none;margin-bottom:10px}
+#reg-box input:focus{border-color:var(--green)}
+/* ADMIN AUTH */
+#aauth{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:998;display:none;align-items:center;justify-content:center}
+#aauth.show{display:flex}
+#abox{width:300px;padding:44px;background:var(--bg2);border:1px solid var(--border)}
+#abox h3{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:6px}
+#abox .asub{font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+#apass{width:100%;background:var(--bg3);border:1px solid var(--border);padding:13px;color:var(--white);font-family:monospace;font-size:22px;letter-spacing:8px;text-align:center;outline:none;margin-bottom:10px}
+#apass:focus{border-color:var(--green)}
+#aperr{font-size:11px;color:#f44;display:none;margin-top:6px}
+/* FIREBASE STATUS */
+#fb-status{position:fixed;bottom:12px;left:12px;font-size:10px;color:var(--gray);letter-spacing:1px;z-index:100}
+#fb-status.ok{color:var(--green)}
+/* BUTTONS */
+.btn{padding:11px 22px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.bg{background:var(--green);color:#000}.bg:hover{background:#00cc33}
+.bo{background:transparent;color:var(--white);border:1px solid var(--border)}.bo:hover{border-color:var(--green);color:var(--green)}
+.bs{padding:7px 12px;font-size:10px}
+.bd{background:transparent;color:#f44;border:1px solid #f44}.bd:hover{background:#f44;color:#fff}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;padding:12px 18px;font-size:11px;font-weight:700;letter-spacing:1px;z-index:9999;transform:translateY(50px);opacity:0;transition:all 0.3s;text-transform:uppercase}
+#toast.show{transform:translateY(0);opacity:1}
+@media(max-width:768px){
+.hero{padding:32px 20px}.topbar{padding:14px 20px}
+.home-cards{grid-template-columns:1fr}.home-menu{grid-template-columns:1fr 1fr}
+.inner{padding:28px 20px}.cgrid{grid-template-columns:1fr}.tpanels{grid-template-columns:1fr}
+.about-team{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- FIREBASE STATUS -->
+<div id="fb-status">● CONNECTING...</div>
+
+<!-- REGISTER -->
+<div id="reg-overlay">
+  <div id="reg-box">
+    <div class="rlbl">OFFICIAL ANALYTICS PROTOCOL V5.0</div>
+    <h2>NFT BATTLE<br>DATABASE</h2>
+    <div id="reg-status"></div>
+    <input type="text" id="reg-nick" placeholder="ВАШ НИК..." maxlength="20" oninput="chkNick()">
+    <input type="number" id="reg-age" placeholder="ВОЗРАСТ (необязательно)">
+    <button class="btn bg" style="width:100%;justify-content:center;margin-top:6px" onclick="register()">ВОЙТИ В СИСТЕМУ</button>
+  </div>
+</div>
+
+<!-- ADMIN AUTH -->
+<div id="aauth">
+  <div id="abox">
+    <h3>ТЕРМИНАЛ</h3>
+    <div class="asub">КОД ДОСТУПА</div>
+    <input type="password" id="apass" placeholder="····" maxlength="6" onkeydown="if(event.key==='Enter')chkPass()">
+    <button class="btn bg" style="width:100%;justify-content:center" onclick="chkPass()">ВОЙТИ</button>
+    <div id="aperr">НЕВЕРНЫЙ КОД</div>
+    <div style="margin-top:12px"><button class="btn bo bs" onclick="closeAauth()">ОТМЕНА</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="topbar">
+    <div class="topbar-logo">NFT BATTLE DATABASE</div>
+    <div class="topbar-user">
+      <span id="htimer">⏱ 00:00</span>
+      <span class="topbar-nick" id="hnick">—</span>
+      <button class="btn bo bs" onclick="logout()" style="font-size:9px;padding:5px 10px">ВЫЙТИ</button>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-label">OFFICIAL ANALYTICS PROTOCOL V5.0</div>
+    <div class="hero-title">NFT BATTLE<br>DATABASE</div>
+    <div class="hero-status">НОЧНАЯ ТОРГОВЛЯ (VOLATILE)</div>
+  </div>
+  <div class="divider"></div>
+  <div class="home-cards">
+    <div class="hcard" onclick="go('nfts')">
+      <div class="hcard-hash">####</div>
+      <div class="hcard-title">РЕЕСТР NFT</div>
+      <div class="hcard-desc">Базовые государственные цены на все NFT активы.</div>
+      <div class="hcard-arr">→</div>
+    </div>
+    <div class="hcard" onclick="go('inventory')">
+      <div class="hcard-hash">####</div>
+      <div class="hcard-title">МОЙ СКЛАД</div>
+      <div class="hcard-desc">Добавление предметов и полный расчёт окупаемости.</div>
+      <div class="hcard-arr">→</div>
+    </div>
+    <div class="hcard" onclick="openAauth()">
+      <div class="hcard-hash">####</div>
+      <div class="hcard-title">ТЕРМИНАЛ</div>
+      <div class="hcard-desc">Управление коэффициентами и реестром цен.</div>
+      <div class="hcard-arr">→</div>
+    </div>
+  </div>
+  <div class="home-menu">
+    <div class="hmitem" onclick="go('converter')"><div class="hmitem-title">💱 КОНВЕРТОР</div><div class="hmitem-desc">Stars · TON · Gems</div></div>
+    <div class="hmitem" onclick="go('aitrade')"><div class="hmitem-title">🤖 ИИ ТРЕЙД</div><div class="hmitem-desc">Цена продажи с наценкой</div></div>
+    <div class="hmitem" onclick="go('ppl')"><div class="hmitem-title">📈 PPL</div><div class="hmitem-desc">Путь оптимальной торговли</div></div>
+    <div class="hmitem" onclick="go('trade')"><div class="hmitem-title" id="tnav">🔄 ТРЕЙД</div><div class="hmitem-desc">Обмен с игроками</div></div>
+  </div>
+  <div class="home-menu" style="border-top:none">
+    <div class="hmitem" onclick="go('chat')"><div class="hmitem-title">💬 ЧАТ</div><div class="hmitem-desc">Глобальный чат</div></div>
+    <div class="hmitem" onclick="go('users')"><div class="hmitem-title">👥 ИГРОКИ</div><div class="hmitem-desc">Онлайн и время</div></div>
+    <div class="hmitem" onclick="go('about')"><div class="hmitem-title">👾 О САЙТЕ</div><div class="hmitem-desc">Создатели проекта</div></div>
+    <div class="hmitem"></div>
+  </div>
+</div>
+
+<!-- NFT LIST -->
+<div class="page" id="page-nfts">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">РЕЕСТР NFT</div><div class="ps">ВСЕ АКТИВЫ</div><div class="hr"></div>
+    <div class="nft-bar">
+      <input type="text" id="nsearch" placeholder="ПОИСК..." oninput="renderNFTs()">
+      <select id="ncf" onchange="renderNFTs()"><option value="">ВСЕ КЕЙСЫ</option></select>
+      <select id="nsort" onchange="renderNFTs()">
+        <option value="case">ПО КЕЙСУ</option>
+        <option value="pa">ЦЕНА ↑</option>
+        <option value="pd">ЦЕНА ↓</option>
+        <option value="name">ПО ИМЕНИ</option>
+      </select>
+    </div>
+    <div id="ncont"></div>
+  </div>
+</div>
+
+<!-- CONVERTER -->
+<div class="page" id="page-converter">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">КОНВЕРТОР</div><div class="ps">ЗВЁЗДЫ · TON · GEMS</div><div class="hr"></div>
+    <div class="cgrid">
+      <div class="cblock"><div class="clbl">⭐ STARS</div><input class="cinput" type="number" id="cis" placeholder="1000000" oninput="conv('s')"><div class="cres" id="cos"></div></div>
+      <div class="cblock"><div class="clbl">💎 TON (кк)</div><input class="cinput" type="number" id="cit" placeholder="1" oninput="conv('t')"><div class="cres" id="cot"></div></div>
+      <div class="cblock"><div class="clbl">💠 GEMS (к)</div><input class="cinput" type="number" id="cig" placeholder="1" oninput="conv('g')"><div class="cres" id="cog"></div></div>
+    </div>
+    <div class="rates-bar">
+      <div>TON 1кк = <span id="rts">900</span>кк Stars</div>
+      <div>Gems 1к = <span id="rgs">750</span>кк Stars</div>
+      <div>TON 1кк = <span id="rtg">8</span>к Gems</div>
+    </div>
+  </div>
+</div>
+
+<!-- AI TRADE -->
+<div class="page" id="page-aitrade">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">ИИ ТРЕЙД</div><div class="ps">РАСЧЁТ ЦЕНЫ ПРОДАЖИ</div><div class="hr"></div>
+    <div class="aitabs">
+      <div class="aitab active" onclick="swAi('s',this)">⭐ STARS</div>
+      <div class="aitab" onclick="swAi('t',this)">💎 TON</div>
+      <div class="aitab" onclick="swAi('g',this)">💠 GEMS</div>
+    </div>
+    <select class="aisel" id="aisel"><option value="">— ВЫБЕРИ NFT —</option></select>
+    <div class="mkrow"><label>НАЦЕНКА ×</label><input class="mkinput" type="number" id="aimk" value="1.12" step="0.01" min="1"></div>
+    <button class="btn bg" onclick="calcAI()">РАССЧИТАТЬ</button>
+    <div class="aibox" id="aibox"><div class="aiboxtitle">РЕЗУЛЬТАТ</div><div id="aicont"></div>
+      <div style="margin-top:14px"><button class="btn bo bs" onclick="showAdv()">💡 КАК ЗАРАБОТАТЬ БОЛЬШЕ</button></div>
+    </div>
+    <div class="advbox" id="advbox"><div class="aiboxtitle">СОВЕТ ИИ</div><div id="advcont"></div></div>
+  </div>
+</div>
+
+<!-- PPL -->
+<div class="page" id="page-ppl">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">PPL</div><div class="ps">ПУТЬ ТОРГОВЛИ</div><div class="hr"></div>
+    <select class="pplsel" id="pplsel"><option value="">— ВЫБЕРИ NFT —</option></select>
+    <div class="pplcount"><label>КОЛИЧЕСТВО (1-10):</label><input type="number" id="pplcnt" value="1" min="1" max="10"></div>
+    <button class="btn bg" onclick="calcPPL()">РАССЧИТАТЬ</button>
+    <div class="aibox" id="pplbox"><div class="aiboxtitle">МАРШРУТ</div><div id="pplcont"></div><div id="pploptt" style="margin-top:14px"></div></div>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div class="page" id="page-inventory">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">МОЙ СКЛАД</div><div class="ps">НАЖИМАЙ НА NFT ЧТОБЫ ДОБАВИТЬ</div><div class="hr"></div>
+    <div id="igrid" class="igrid"></div>
+    <div class="ibottom">
+      <div>
+        <div class="itotallbl">СТОИМОСТЬ СКЛАДА</div>
+        <div class="itotal" id="itotal" onclick="cycleInv()">★ 0</div>
+        <div style="font-size:9px;color:var(--gray);margin-top:3px">нажми для смены валюты</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:10px">
+        <button class="btn bg" onclick="loadInv()">ЗАГРУЗИТЬ</button>
+        <button class="btn bd bs" onclick="resetInv()">СБРОС</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRADE -->
+<div class="page" id="page-trade">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">ТРЕЙД</div><div class="ps">ОБМЕН С ИГРОКОМ</div><div class="hr"></div>
+    <div id="tnotifs"></div>
+    <div class="tsearch"><input type="text" id="tsrch" placeholder="НИК ИГРОКА..." oninput="srchUser()"></div>
+    <div id="tulist" class="tulist"></div>
+    <div id="tmain" style="display:none">
+      <div style="font-size:11px;color:var(--green);letter-spacing:2px;margin-bottom:14px;font-weight:700" id="ttgtlbl"></div>
+      <div class="tpanels">
+        <div class="tpanel"><div class="tplbl">ТЫ ПРЕДЛАГАЕШЬ</div><div id="tmypicks" class="tnpick"></div></div>
+        <div class="tpanel"><div class="tplbl">ХОЧЕШЬ ПОЛУЧИТЬ</div><div id="ttheirpicks" class="tnpick"></div></div>
+      </div>
+      <button class="btn bg" onclick="sendTrade()">ОТПРАВИТЬ ТРЕЙД</button>
+    </div>
+    <div id="tsent" style="display:none;margin-top:14px">
+      <div class="nbox"><div class="nboxt">ТРЕЙД ОТПРАВЛЕН</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Когда игрок примет — вы оба получите ссылку на сервер.</div>
+        <a href="https://t.me/nftbattle" target="_blank" class="btn bg bs">ПЕРЕЙТИ НА СЕРВЕР →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">ЧАТ</div><div class="ps">ГЛОБАЛЬНЫЙ · РЕАЛЬНОЕ ВРЕМЯ</div><div class="hr"></div>
+    <div id="chatmsgs" class="msgsbox"></div>
+    <div class="cinrow">
+      <input type="text" id="chatinp" placeholder="СООБЩЕНИЕ..." maxlength="300" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn bg" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- USERS -->
+<div class="page" id="page-users">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">ИГРОКИ</div><div class="ps">ВРЕМЯ НА САЙТЕ</div><div class="hr"></div>
+    <div id="userslist"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">О САЙТЕ</div><div class="ps">КОМАНДА ПРОЕКТА</div><div class="hr"></div>
+    <div class="about-team">
+      <div class="about-card">
+        <div class="about-role">👑 ГЛАВНЫЙ СОЗДАТЕЛЬ</div>
+        <div class="about-name">DA_DA_No</div>
+        <div class="about-tg">Telegram: <a href="https://t.me/DA_DA_No" target="_blank">@DA_DA_No</a></div>
+        <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6">Основатель и главный разработчик проекта NFT Battle Database. Идея, концепция, управление.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-role">🔧 ТЕСТЕР И ПОМОЩНИК ПО ИДЕЯМ</div>
+        <div class="about-name">OTMENA475</div>
+        <div class="about-tg">Telegram: <a href="https://t.me/otmena475" target="_blank">@otmena475</a></div>
+        <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6">Тестирование функций, помощь с идеями и улучшениями проекта.</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);padding:28px">
+      <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">О ПРОЕКТЕ</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">
+        NFT Battle Database — инструмент для игроков NFT Battle на Roblox.<br>
+        Помогает торговать выгодно, считать стоимость инвентаря и находить лучшие пути обмена.<br><br>
+        <span style="color:var(--green)">★</span> Реестр всех NFT с ценами<br>
+        <span style="color:var(--green)">★</span> Конвертор Stars / TON / Gems<br>
+        <span style="color:var(--green)">★</span> ИИ Трейд — расчёт цены продажи<br>
+        <span style="color:var(--green)">★</span> PPL — оптимальный путь торговли<br>
+        <span style="color:var(--green)">★</span> Склад с расчётом стоимости<br>
+        <span style="color:var(--green)">★</span> Трейд между игроками<br>
+        <span style="color:var(--green)">★</span> Глобальный чат в реальном времени
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TERMINAL -->
+<div class="page" id="page-terminal">
+  <div class="inner">
+    <div class="back" onclick="go('home')">← НАЗАД</div>
+    <div class="ph">ТЕРМИНАЛ</div><div class="ps">ПАНЕЛЬ УПРАВЛЕНИЯ · ПАРОЛЬ 1991</div><div class="hr"></div>
+
+    <!-- RATES -->
+    <div class="tsect">
+      <div class="tsectt">💱 КУРСЫ ВАЛЮТ</div>
+      <div class="trow"><label>TON 1кк = ? кк Stars</label><input class="tinput" type="number" id="trts" value="900"></div>
+      <div class="trow"><label>Gems 1к = ? кк Stars</label><input class="tinput" type="number" id="trgs" value="750"></div>
+      <div class="trow"><label>TON 1кк = ? к Gems</label><input class="tinput" type="number" id="trtg" value="8"></div>
+    </div>
+
+    <!-- ADD NEW CASE -->
+    <div class="tsect">
+      <div class="tsectt">➕ ДОБАВИТЬ НОВЫЙ НФТ ПАК</div>
+      <button class="btn bg bs" style="margin-bottom:14px" onclick="toggleNewCase()">+ НОВЫЙ НФТ ПАК</button>
+      <div class="newcase-form" id="newcase-form">
+        <div class="trow"><label>Название кейса</label><input class="tinput" type="text" id="nc-name" placeholder="Например: Новый кейс"></div>
+        <div style="margin:14px 0 10px;font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;font-weight:700">NFT В КЕЙСЕ:</div>
+        <div id="nc-nfts"></div>
+        <button class="btn bo bs" onclick="addNFTToNewCase()" style="margin-bottom:14px">+ ДОБАВИТЬ NFT</button>
+        <br>
+        <button class="btn bg" onclick="createNewCase()">✓ СОЗДАТЬ КЕЙ</button>
+        <button class="btn bo bs" onclick="toggleNewCase()" style="margin-left:8px">ОТМЕНА</button>
+      </div>
+    </div>
+
+    <!-- NFT PRICES -->
+    <div class="tsect">
+      <div class="tsectt">🎴 NFT — ЦЕНЫ · НАЦЕНКИ · ФОТО</div>
+      <div style="margin-bottom:10px"><input class="tinput" type="text" id="tnfsearch" placeholder="ПОИСК NFT..." oninput="renderTNFTs()" style="max-width:280px"></div>
+      <div id="tnflist" style="max-height:500px;overflow-y:auto"></div>
+    </div>
+
+    <!-- USERS MANAGEMENT -->
+    <div class="tsect">
+      <div class="tsectt">👥 УПРАВЛЕНИЕ ИГРОКАМИ</div>
+      <button class="btn bo bs" onclick="renderUsersAdmin()" style="margin-bottom:12px">ОБНОВИТЬ СПИСОК</button>
+      <div id="tadminusers"></div>
+    </div>
+
+    <!-- ANNOUNCE -->
+    <div class="tsect">
+      <div class="tsectt">📢 ОБЪЯВЛЕНИЕ В ЧАТ</div>
+      <div class="trow"><label>Текст</label><input class="tinput" type="text" id="tann" placeholder="Введи объявление..."></div>
+      <button class="btn bo bs" onclick="sendAnn()">ОТПРАВИТЬ</button>
+    </div>
+
+    <!-- SAVE -->
+    <div class="tsect" style="border-bottom:none">
+      <div class="tsectt">💾 СОХРАНЕНИЕ (ДЛЯ ВСЕХ)</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:14px">Данные сохраняются в Firebase и видны всем пользователям.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn bg" onclick="saveAll()">💾 СОХРАНИТЬ ВСЁ</button>
+        <button class="btn bd bs" onclick="resetAll()">СБРОС</button>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:var(--gray)" id="tsavest"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// FIREBASE INIT
+const firebaseConfig={
+  apiKey:"AIzaSyCNc2bFoIJYpt8cp4TABkBYO9OQUYJOL3k",
+  authDomain:"ppll-1103d.firebaseapp.com",
+  databaseURL:"https://ppll-1103d-default-rtdb.firebaseio.com",
+  projectId:"ppll-1103d",
+  storageBucket:"ppll-1103d.firebasestorage.app",
+  messagingSenderId:"852259799275",
+  appId:"1:852259799275:web:913868c0c21b2ed10a3eae"
+};
+firebase.initializeApp(firebaseConfig);
+const DB=firebase.database();
+
+// Test connection
+DB.ref('.info/connected').on('value',snap=>{
+  const el=document.getElementById('fb-status');
+  if(snap.val()){el.textContent='● FIREBASE ONLINE';el.className='ok';}
+  else{el.textContent='● OFFLINE';el.className='';}
+});
+
+// NFT DATA
+const ND=[
+  {id:1,name:"Плюшевый Пеп (ядовитый дротик)",price:1205075,case:"Плюшевый Пеп",prob:25,mk:1.12,img:""},
+  {id:2,name:"Плюшевый Пеп (Оранжевый шут)",price:1337250,case:"Плюшевый Пеп",prob:22,mk:1.12,img:""},
+  {id:3,name:"Плюшевый Пеп (амальгам)",price:1625025,case:"Плюшевый Пеп",prob:12,mk:1.12,img:""},
+  {id:4,name:"Плюшевый Пеп (аква-плюшевый)",price:3625000,case:"Плюшевый Пеп",prob:12,mk:1.12,img:""},
+  {id:5,name:"Плюшевый Пеп (Эмо-мальчик)",price:5036225,case:"Плюшевый Пеп",prob:10,mk:1.12,img:""},
+  {id:6,name:"Плюшевый Пеп (Изумрудный плюш)",price:6985225,case:"Плюшевый Пеп",prob:8,mk:1.12,img:""},
+  {id:7,name:"Плюшевый Пеп (Уютная Галактика)",price:7425750,case:"Плюшевый Пеп",prob:6,mk:1.12,img:""},
+  {id:8,name:"Плюшевый Пеп (Мидас Пеп)",price:10086725,case:"Плюшевый Пеп",prob:4,mk:1.12,img:""},
+  {id:9,name:"Плюшевый Пеп (Загрузка...)",price:58350025,case:"Плюшевый Пеп",prob:0.7,mk:1.12,img:""},
+  {id:10,name:"Плюшевый Пеп (Прыжок Гуччи)",price:237725750,case:"Плюшевый Пеп",prob:0.2,mk:1.12,img:""},
+  {id:11,name:"Плюшевый Пепе (Горячая голова)",price:846461046,case:"Плюшевый Пеп",prob:0.1,mk:1.12,img:""},
+  {id:12,name:"Могущественная рука (насос пиццы)",price:873175,case:"Черепашки Ниндзя",prob:28,mk:1.12,img:""},
+  {id:13,name:"Счастливый брауни (Рафаэль)",price:753250,case:"Черепашки Ниндзя",prob:21,mk:1.12,img:""},
+  {id:14,name:"Плюшевый Пепе (ниндзя Майк)",price:8825756,case:"Черепашки Ниндзя",prob:13.85,mk:1.12,img:""},
+  {id:15,name:"Плюшевый Пепе (Донателло)",price:11937224,case:"Черепашки Ниндзя",prob:13.63,mk:1.12,img:""},
+  {id:16,name:"Плюшевый Пепе (Рафаэль)",price:13537250,case:"Черепашки Ниндзя",prob:12,mk:1.12,img:""},
+  {id:17,name:"Плюшевый Пепе (Леонардо)",price:15327440,case:"Черепашки Ниндзя",prob:11.5,mk:1.12,img:""},
+  {id:18,name:"Плюшевый Пепе (Черепахи)",price:1738341480,case:"Черепашки Ниндзя",prob:0.02,mk:1.12,img:""},
+  {id:19,name:"Настольный календарь (декабрь)",price:13061355,case:"Настольный календарь",prob:4,mk:1.12,img:""},
+  {id:20,name:"Настольный календарь (Золотые годы)",price:15081355,case:"Настольный календарь",prob:4,mk:1.12,img:""},
+  {id:21,name:"Настольный календарь (четверг)",price:18081355,case:"Настольный календарь",prob:4,mk:1.12,img:""},
+  {id:22,name:"Настольный календарь (Июнь)",price:28081355,case:"Настольный календарь",prob:2,mk:1.12,img:""},
+  {id:23,name:"Настольный календарь (апрель)",price:39081355,case:"Настольный календарь",prob:2,mk:1.12,img:""},
+  {id:24,name:"Настольный календарь (Сентябрь)",price:50081355,case:"Настольный календарь",prob:1.4,mk:1.12,img:""},
+  {id:25,name:"Настольный календарь (март)",price:67061355,case:"Настольный kalendарь",prob:1.4,mk:1.12,img:""},
+  {id:26,name:"Настольный календарь (суббота)",price:75061355,case:"Настольный календарь",prob:1.2,mk:1.12,img:""},
+  {id:27,name:"Настольный календарь (день Дурова)",price:200081355,case:"Настольный календарь",prob:0.5,mk:1.12,img:""},
+  {id:28,name:"Настольный календарь (планы Пепе)",price:257061355,case:"Настольный календарь",prob:0.5,mk:1.12,img:""},
+  {id:29,name:"Настольный календарь (время горения)",price:285061355,case:"Настольный календарь",prob:0.4,mk:1.12,img:""},
+  {id:30,name:"Настольный календарь (менеджер фондов)",price:325061355,case:"Настольный календарь",prob:0.3,mk:1.12,img:""},
+  {id:31,name:"Настольный календарь (инвестор)",price:345061355,case:"Настольный календарь",prob:0.3,mk:1.12,img:""},
+  {id:32,name:"Сердце",price:15,case:"Сердце",prob:25,mk:1.12,img:""},
+  {id:33,name:"Плюшевый Пеп (рентген)",price:1000206225,case:"Сердце",prob:0.05,mk:1.12,img:""},
+  {id:34,name:"Рождественские носки (рай)",price:1111111,case:"Ангел",prob:57.69,mk:1.12,img:""},
+  {id:35,name:"Ионный сушильник (ангельский взрыв)",price:9999999,case:"Ангел",prob:25,mk:1.12,img:""},
+  {id:36,name:"Цилиндровая шляпа (Небесная)",price:17777777,case:"Ангел",prob:17,mk:1.12,img:""},
+  {id:37,name:"Мяч для саней (святая граната)",price:4444444444,case:"Ангел",prob:0.2,mk:1.12,img:""},
+  {id:38,name:"Мешок для добычи (священный)",price:7777777777,case:"Ангел",prob:0.1,mk:1.12,img:""},
+  {id:39,name:"Собака сопротивления (святая собака)",price:22222222222,case:"Ангел",prob:0.01,mk:1.12,img:""},
+  {id:40,name:"Ввести ключ (Ангел)",price:2625,case:"Ангел 2",prob:80,mk:1.12,img:""},
+  {id:41,name:"Игрушечный медведь (Ангел)",price:16250,case:"Ангел 2",prob:19.75,mk:1.12,img:""},
+  {id:42,name:"Плюшевый Пеп (Кунгу-Пеп)",price:3074895775,case:"Ангел 2",prob:0.2,mk:1.12,img:""},
+  {id:43,name:"Кристальный орлан",price:4905850225,case:"Ангел 2",prob:0.04,mk:1.12,img:""},
+  {id:44,name:"Драгоценный значок (Паучий мальчик)",price:10782203050,case:"Ангел 2",prob:0.01,mk:1.12,img:""},
+  {id:45,name:"Ботинки Дурова",price:170625,case:"Дуров",prob:75.7,mk:1.12,img:""},
+  {id:46,name:"Пальто Дурова",price:840325,case:"Дуров",prob:20,mk:1.12,img:""},
+  {id:47,name:"Солнцезащитные очки Дурова",price:13178050,case:"Дуров",prob:4,mk:1.12,img:""},
+  {id:48,name:"Фигурка Дурова",price:210256075,case:"Дуров",prob:0.23,mk:1.12,img:""},
+  {id:49,name:"Фигурка Дурова (рентген)",price:510256075,case:"Дуров",prob:0.1,mk:1.12,img:""},
+  {id:50,name:"Плюшевый Пеп (стальная Лягушка)",price:1583075550,case:"Дуров",prob:0.02,mk:1.12,img:""},
+  {id:51,name:"Свобода",price:405156,case:"Свобода",prob:69.77,mk:1.12,img:""},
+  {id:52,name:"Бантик на галстуке (собака Дурова)",price:1502659,case:"Свобода",prob:25,mk:1.12,img:""},
+  {id:53,name:"Веселый набор (хранилище камней)",price:38145769,case:"Свобода",prob:4.99,mk:1.12,img:""},
+  {id:54,name:"Тама Гаджет (Подпёс)",price:3659561518,case:"Свобода",prob:0.22,mk:1.12,img:""},
+  {id:55,name:"Нежный браслет (Сопротивление)",price:44954431645,case:"Свобода",prob:0.02,mk:1.12,img:""},
+  {id:56,name:"Плюшевый Пеп (Клоун)",price:77777777777,case:"NFT Battle Клоун",prob:0.1,mk:1.12,img:""},
+  {id:57,name:"Значок сердца (Цирк)",price:1135005,case:"NFT Battle Клоун",prob:29.9,mk:1.12,img:""},
+  {id:58,name:"Шапка Дурова (Веселое время)",price:232775,case:"NFT Battle Клоун",prob:70,mk:1.12,img:""},
+  {id:59,name:"Сияющий Бинки (Племенной череп)",price:78025,case:"NFT Battle Микс",prob:41.88,mk:1.12,img:""},
+  {id:60,name:"Знак с западной стороны (сапфир)",price:107625,case:"NFT Battle Микс",prob:33,mk:1.12,img:""},
+  {id:61,name:"Розовый Фламинго",price:189250,case:"NFT Battle Микс",prob:25,mk:1.12,img:""},
+  {id:62,name:"Плюшевый Пеп (Магнат)",price:924760275,case:"NFT Battle Микс",prob:0.1,mk:1.12,img:""},
+  {id:63,name:"Шапка Дурова (Трон)",price:398025,case:"Трон",prob:95,mk:1.12,img:""},
+  {id:64,name:"Значок сердца (меха-любовь)",price:600000,case:"Трон",prob:4.95,mk:1.12,img:""},
+];
+
+let R={tonToStars:900,gemsToStars:750,tonToGems:8};
+let CU=null,SS=null,AU={};
+let ICM=0,INV={},PD={};
+let TT=null,MP=[],TP2=[];
+let aiTab='s';
+let ncNFTs=[];
+
+// ============================================================
+// FIREBASE LISTENERS — realtime sync for all users
+// ============================================================
+function startFirebaseListeners(){
+  // Settings (rates + nft prices) — shared for all
+  DB.ref('settings').on('value',snap=>{
+    const d=snap.val();
+    if(!d)return;
+    if(d.rates){R={...R,...d.rates};updRD();}
+    if(d.nftPrices){
+      d.nftPrices.forEach(s=>{
+        const n=ND.find(x=>x.id===s.id);
+        if(n){n.name=s.name;n.price=s.price;n.mk=s.mk;}
+      });
+    }
+    if(d.newNFTs){
+      d.newNFTs.forEach(nn=>{
+        if(!ND.find(x=>x.id===nn.id))ND.push(nn);
+      });
+    }
+  });
+
+  // Chat — realtime
+  DB.ref('chat').limitToLast(100).on('child_added',snap=>{
+    const m=snap.val();
+    if(m&&!document.getElementById('chat-'+snap.key)){
+      renderChatMsg(m,snap.key);
+    }
+  });
+
+  // Users — realtime
+  DB.ref('users').on('value',snap=>{
+    const d=snap.val();
+    if(d)AU={...AU,...d};
+    if(document.getElementById('page-users').classList.contains('active'))renderUsers();
+  });
+
+  // Trades — realtime
+  DB.ref('trades').on('value',snap=>{
+    const d=snap.val();
+    if(d&&CU){
+      const myTrades=Object.values(d).filter(t=>t.to===CU.nick&&t.status==='pending');
+      renderTradeNotifs(myTrades,d);
+    }
+  });
+}
+
+// ============================================================
+// REGISTER / LOGIN
+// ============================================================
+function chkNick(){
+  const n=document.getElementById('reg-nick').value.trim();
+  const st=document.getElementById('reg-status');
+  if(!n){st.textContent='';return;}
+  DB.ref('users/'+n).once('value',snap=>{
+    if(snap.val())st.textContent='✓ АККАУНТ НАЙДЕН — ВХОДИШЬ';
+    else st.textContent='НОВЫЙ АККАУНТ';
+  });
+}
+
+function register(){
+  const n=document.getElementById('reg-nick').value.trim();
+  const a=document.getElementById('reg-age').value;
+  if(!n){alert('Введи ник!');return;}
+  CU={nick:n,age:a||null};SS=Date.now();
+  DB.ref('users/'+n).once('value',snap=>{
+    const existing=snap.val()||{};
+    const userData={nick:n,age:a||existing.age||null,totalTime:existing.totalTime||0,lastSeen:Date.now(),online:true};
+    AU[n]=userData;
+    DB.ref('users/'+n).set(userData);
+    localStorage.setItem('nfb_cur',n);
+    document.getElementById('hnick').textContent=n;
+    document.getElementById('reg-overlay').style.display='none';
+    startFirebaseListeners();
+    addChat({nick:'СИСТЕМА',text:n+' вошёл в систему',sys:true});
+    updTNotifs();
+    setInterval(updTimer,1000);
+    setInterval(saveSess,30000);
+  });
+}
+
+function logout(){
+  if(!confirm('Выйти?'))return;
+  if(CU){
+    saveSess();
+    DB.ref('users/'+CU.nick).update({online:false});
+  }
+  CU=null;SS=null;
+  localStorage.removeItem('nfb_cur');
+  document.getElementById('reg-nick').value='';
+  document.getElementById('reg-age').value='';
+  document.getElementById('reg-status').textContent='';
+  document.getElementById('reg-overlay').style.display='flex';
+  document.getElementById('hnick').textContent='—';
+  document.getElementById('htimer').textContent='⏱ 00:00';
+}
+
+function updTimer(){
+  if(!SS)return;
+  const s=Math.floor((Date.now()-SS)/1000);
+  document.getElementById('htimer').textContent='⏱ '+p2(Math.floor(s/60))+':'+p2(s%60);
+}
+function p2(n){return String(n).padStart(2,'0')}
+function saveSess(){
+  if(!CU||!SS)return;
+  const e=Math.floor((Date.now()-SS)/1000);
+  SS=Date.now();
+  DB.ref('users/'+CU.nick+'/totalTime').transaction(t=>(t||0)+e);
+  DB.ref('users/'+CU.nick+'/lastSeen').set(Date.now());
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(id==='nfts')renderNFTs();
+  if(id==='inventory')renderInv();
+  if(id==='users')renderUsers();
+  if(id==='aitrade')popAiSel();
+  if(id==='ppl')popPPLSel();
+  if(id==='terminal')renderTNFTs();
+  if(id==='trade')renderTrade();
+}
+
+function fmt(n){
+  n=Number(n);
+  if(n>=1e12)return(n/1e12).toFixed(2)+'T';
+  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(2)+'кк';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'к';
+  return Math.round(n).toString();
+}
+
+// ============================================================
+// NFT GRID
+// ============================================================
+function renderNFTs(){
+  const q=(document.getElementById('nsearch')?.value||'').toLowerCase();
+  const cf=document.getElementById('ncf')?.value||'';
+  const so=document.getElementById('nsort')?.value||'case';
+  const cases=[...new Set(ND.map(n=>n.case))];
+  const cfel=document.getElementById('ncf');
+  if(cfel){cfel.innerHTML='<option value="">ВСЕ КЕЙСЫ</option>';cases.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cfel.appendChild(o);});}
+  let d=[...ND];
+  if(q)d=d.filter(n=>n.name.toLowerCase().includes(q));
+  if(cf)d=d.filter(n=>n.case===cf);
+  if(so==='pa')d.sort((a,b)=>a.price-b.price);
+  else if(so==='pd')d.sort((a,b)=>b.price-a.price);
+  else if(so==='name')d.sort((a,b)=>a.name.localeCompare(b.name));
+  const c=document.getElementById('ncont');if(!c)return;
+  if(so==='case'&&!q&&!cf){
+    let h='';cases.forEach(cs=>{const it=d.filter(n=>n.case===cs);if(!it.length)return;h+=`<div class="case-hdr">📦 ${cs}</div><div class="ngrid">`;it.forEach(n=>{h+=nch(n);});h+='</div>';});c.innerHTML=h;
+  } else {c.innerHTML='<div class="ngrid">'+d.map(nch).join('')+'</div>';}
+}
+function nch(n){
+  const sc=PD['sc_'+n.id]||1;
+  const imgH=n.img?`<img src="${n.img}" style="transform:scale(${sc})">`:''
+  return`<div class="ncard" onclick="pickAI(${n.id})"><div class="nimg">${n.img?imgH:'####'}</div><div class="nname">${n.name}</div><div class="nprice">${fmt(n.price)}</div><div class="nprob">${n.prob}%</div></div>`;
+}
+function pickAI(id){go('aitrade');setTimeout(()=>{const s=document.getElementById('aisel');if(s)s.value=id;},100);}
+
+// ============================================================
+// CONVERTER
+// ============================================================
+function conv(f){
+  if(f==='s'){const v=parseFloat(document.getElementById('cis').value)||0;document.getElementById('cos').innerHTML=`<strong>${fmt(v/R.tonToStars)}</strong> кк TON<br><strong>${fmt(v/R.gemsToStars*1000)}</strong> к Gems`;}
+  else if(f==='t'){const v=parseFloat(document.getElementById('cit').value)||0;document.getElementById('cot').innerHTML=`<strong>${fmt(v*R.tonToStars)}</strong> кк Stars<br><strong>${fmt(v*R.tonToGems)}</strong> к Gems`;}
+  else{const v=parseFloat(document.getElementById('cig').value)||0;document.getElementById('cog').innerHTML=`<strong>${fmt(v*R.gemsToStars/1000)}</strong> кк Stars<br><strong>${fmt(v/R.tonToGems)}</strong> кк TON`;}
+}
+function updRD(){
+  const e1=document.getElementById('rts');if(e1)e1.textContent=R.tonToStars;
+  const e2=document.getElementById('rgs');if(e2)e2.textContent=R.gemsToStars;
+  const e3=document.getElementById('rtg');if(e3)e3.textContent=R.tonToGems;
+}
+
+// ============================================================
+// AI TRADE
+// ============================================================
+function swAi(t,el){aiTab=t;document.querySelectorAll('.aitab').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('aibox').classList.remove('show');document.getElementById('advbox').classList.remove('show');}
+function popAiSel(){const s=document.getElementById('aisel');if(!s)return;s.innerHTML='<option value="">— ВЫБЕРИ NFT —</option>';ND.forEach(n=>{const o=document.createElement('option');o.value=n.id;o.textContent=n.name+' (★'+fmt(n.price)+')';s.appendChild(o);});}
+function calcAI(){
+  const id=parseInt(document.getElementById('aisel').value);if(!id){toast('Выбери NFT!');return;}
+  const n=ND.find(x=>x.id===id);const mk=parseFloat(document.getElementById('aimk').value)||n.mk||1.12;
+  const sell=Math.round(n.price*mk);
+  let h=`<div class="ailine">NFT: <b>${n.name}</b></div><div class="ailine">Базовая цена: <b>★ ${fmt(n.price)}</b></div><div class="ailine">Наценка: <b>×${mk}</b></div>`;
+  if(aiTab==='s')h+=`<div class="ailine">Продавай за: <b>★ ${fmt(sell)}</b></div>`;
+  else if(aiTab==='t')h+=`<div class="ailine">Продавай за: <b>${(sell/1e6/R.tonToStars).toFixed(4)} кк TON</b></div>`;
+  else h+=`<div class="ailine">Продавай за: <b>${(sell/1e6/R.gemsToStars*1000).toFixed(2)} к Gems</b></div>`;
+  document.getElementById('aicont').innerHTML=h;document.getElementById('aibox').classList.add('show');document.getElementById('advbox').classList.remove('show');
+  window._an=n;window._as=sell;
+}
+function showAdv(){
+  const n=window._an,sell=window._as;if(!n)return;
+  const srt=[...ND].sort((a,b)=>a.price-b.price);const idx=srt.findIndex(x=>x.id===n.id);const nx=srt.find((x,i)=>i>idx&&x.price>sell);
+  let h='';
+  if(nx){const ns=Math.round(nx.price*(nx.mk||1.12));h=`Продай <b>${n.name}</b> за <b>★ ${fmt(sell)}</b>.<br><br>Купи <b>${nx.name}</b> за ~<b>★ ${fmt(nx.price)}</b>.<br>Продай за <b>★ ${fmt(ns)}</b>.<br><br>Профит: <b style="color:var(--green)">+★ ${fmt(ns-sell)}</b>`;}
+  else{h=`Держи это NFT! Цена: <b>★ ${fmt(sell)}</b>`;}
+  document.getElementById('advcont').innerHTML=h;document.getElementById('advbox').classList.add('show');
+}
+
+// ============================================================
+// PPL
+// ============================================================
+function popPPLSel(){const s=document.getElementById('pplsel');if(!s)return;s.innerHTML='<option value="">— ВЫБЕРИ NFT —</option>';ND.forEach(n=>{const o=document.createElement('option');o.value=n.id;o.textContent=n.name+' (★'+fmt(n.price)+')';s.appendChild(o);});}
+function calcPPL(){
+  const id=parseInt(document.getElementById('pplsel').value);const cnt=parseInt(document.getElementById('pplcnt').value)||1;
+  if(!id){toast('Выбери NFT!');return;}
+  const n=ND.find(x=>x.id===id);const sp=Math.round(n.price*(n.mk||1.12))*cnt;
+  const srt=[...ND].sort((a,b)=>a.price-b.price);const buy=srt.filter(x=>x.price<=sp&&x.id!==id);
+  document.getElementById('pplcont').innerHTML=`<div class="pplstep"><div class="pplstepn">1</div><div class="pplstept">Продай <b>${cnt}x ${n.name}</b> за <b>★ ${fmt(sp)}</b></div></div><div class="pplstep"><div class="pplstepn">2</div><div class="pplstept">На <b>★ ${fmt(sp)}</b> можешь купить:</div></div>`;
+  let oh='';
+  if(!buy.length){oh='<div style="font-size:12px;color:var(--text2)">Нет вариантов</div>';}
+  else{buy.slice(-8).reverse().forEach(b=>{const q=Math.floor(sp/b.price);const ns=Math.round(b.price*(b.mk||1.12))*q;oh+=`<div class="pploption" onclick="pplNext(${b.id},${q},${ns})"><b>${q}x ${b.name}</b> — куп: ★${fmt(b.price*q)} → продашь ★${fmt(ns)} <span style="color:var(--green)">+★${fmt(ns-sp)}</span></div>`;});}
+  document.getElementById('pploptt').innerHTML=oh;document.getElementById('pplbox').classList.add('show');
+}
+function pplNext(id,q,ns){
+  const n=ND.find(x=>x.id===id);if(!n)return;
+  const srt=[...ND].sort((a,b)=>a.price-b.price);const buy=srt.filter(x=>x.price<=ns&&x.id!==id);
+  document.getElementById('pplcont').innerHTML+=`<div class="pplstep"><div class="pplstepn">→</div><div class="pplstept">Продаёшь <b>${q}x ${n.name}</b> за <b>★ ${fmt(ns)}</b>. Варианты:</div></div>`;
+  let oh='';buy.slice(-6).reverse().forEach(b=>{const qty=Math.floor(ns/b.price);const nns=Math.round(b.price*(b.mk||1.12))*qty;oh+=`<div class="pploption" onclick="pplNext(${b.id},${qty},${nns})"><b>${qty}x ${b.name}</b> → ★${fmt(nns)} <span style="color:var(--green)">+★${fmt(nns-ns)}</span></div>`;});
+  document.getElementById('pploptt').innerHTML=oh||'<div style="font-size:12px;color:var(--text2)">Нет вариантов</div>';
+}
+
+// ============================================================
+// INVENTORY
+// ============================================================
+function renderInv(){
+  const g=document.getElementById('igrid');if(!g)return;
+  g.innerHTML=ND.map(n=>{const cnt=INV[n.id]||0;const sc=PD['sc_'+n.id]||1;const imgH=n.img?`<img src="${n.img}" style="transform:scale(${sc})">`:''
+    return`<div class="icard${cnt>0?' sel':''}" onclick="itap(${n.id})" id="ic-${n.id}"><div class="icnt${cnt>0?' show':''}" id="icnt-${n.id}">${cnt}</div><div class="iimg">${n.img?imgH:'##'}</div><div class="iname">${n.name}</div></div>`;
+  }).join('');updInvTotal();
+}
+function itap(id){INV[id]=(INV[id]||0)+1;if(INV[id]>9999)INV[id]=9999;const c=document.getElementById('ic-'+id);const ct=document.getElementById('icnt-'+id);if(c)c.classList.add('sel');if(ct){ct.textContent=INV[id];ct.classList.add('show');}updInvTotal();}
+function updInvTotal(){let t=0;ND.forEach(n=>{t+=n.price*(INV[n.id]||0);});let d='';if(ICM===0)d='★ '+fmt(t)+' Stars';else if(ICM===1)d='💎 '+fmt(t/1e6/R.tonToStars)+' кк TON';else d='💠 '+fmt(t/1e6/R.gemsToStars*1000)+' к Gems';const el=document.getElementById('itotal');if(el)el.textContent=d;}
+function cycleInv(){ICM=(ICM+1)%3;updInvTotal();}
+function loadInv(){toast('Склад загружен!');}
+function resetInv(){INV={};renderInv();}
+
+// ============================================================
+// TRADE
+// ============================================================
+function renderTrade(){
+  const m=document.getElementById('tmypicks');const t=document.getElementById('ttheirpicks');if(!m||!t)return;
+  m.innerHTML=ND.map(n=>`<div class="tnchip${MP.includes(n.id)?' picked':''}" onclick="togMy(${n.id})">${n.name.substring(0,18)}</div>`).join('');
+  t.innerHTML=ND.map(n=>`<div class="tnchip${TP2.includes(n.id)?' picked':''}" onclick="togTheir(${n.id})">${n.name.substring(0,18)}</div>`).join('');
+}
+function togMy(id){const i=MP.indexOf(id);if(i===-1)MP.push(id);else MP.splice(i,1);renderTrade();}
+function togTheir(id){const i=TP2.indexOf(id);if(i===-1)TP2.push(id);else TP2.splice(i,1);renderTrade();}
+function srchUser(){
+  const q=document.getElementById('tsrch').value.toLowerCase();const l=document.getElementById('tulist');
+  if(!q){l.style.display='none';return;}
+  DB.ref('users').once('value',snap=>{
+    const users=snap.val()||{};
+    const found=Object.values(users).filter(u=>u.nick.toLowerCase().includes(q)&&(!CU||u.nick!==CU.nick));
+    if(!found.length){l.style.display='none';return;}
+    l.style.display='block';
+    l.innerHTML=found.map(u=>`<div class="tuitem" onclick="selTU('${u.nick}')">${u.nick}</div>`).join('');
+  });
+}
+function selTU(n){TT=n;document.getElementById('ttgtlbl').textContent='ТРЕЙД С: '+n;document.getElementById('tmain').style.display='block';document.getElementById('tulist').style.display='none';MP=[];TP2=[];renderTrade();}
+function sendTrade(){
+  if(!TT){toast('Выбери игрока!');return;}if(!MP.length){toast('Выбери что предлагаешь!');return;}
+  const tr={from:CU.nick,to:TT,mi:MP,ti:TP2,time:Date.now(),status:'pending'};
+  DB.ref('trades').push(tr);
+  document.getElementById('tsent').style.display='block';toast('Трейд отправлен!');
+}
+function updTNotifs(){
+  if(!CU)return;
+  DB.ref('trades').orderByChild('to').equalTo(CU.nick).once('value',snap=>{
+    const d=snap.val()||{};
+    const myT=Object.values(d).filter(t=>t.status==='pending');
+    const tn=document.getElementById('tnav');
+    if(myT.length>0&&tn)tn.innerHTML='🔄 ТРЕЙД <span class="ndot"></span>';
+    renderTradeNotifs(myT,d);
+  });
+}
+function renderTradeNotifs(myTrades,allData){
+  const el=document.getElementById('tnotifs');if(!el)return;
+  const keys=Object.keys(allData||{});
+  el.innerHTML=myTrades.map(t=>{
+    const key=keys.find(k=>allData[k]===t)||'';
+    return`<div class="nbox"><div class="nboxt">ТРЕЙД ОТ ${t.from}</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Предлагает: ${(t.mi||[]).map(id=>ND.find(n=>n.id===id)?.name||'?').join(', ')}<br>Хочет: ${(t.ti||[]).map(id=>ND.find(n=>n.id===id)?.name||'?').join(', ')||'—'}</div>
+      <div style="display:flex;gap:8px"><a href="https://t.me/nftbattle" target="_blank" class="btn bg bs">ПРИНЯТЬ →</a></div></div>`;
+  }).join('');
+}
+
+// ============================================================
+// CHAT — Firebase realtime
+// ============================================================
+function addChat(m){
+  DB.ref('chat').push(m).catch(()=>{renderChatMsg(m,'local-'+Date.now());});
+}
+function renderChatMsg(m,key){
+  const c=document.getElementById('chatmsgs');if(!c)return;
+  if(document.getElementById('chat-'+key))return;
+  const div=document.createElement('div');div.id='chat-'+key;
+  if(m.sys){div.className='csys';div.textContent=m.text;}
+  else{
+    const own=CU&&m.nick===CU.nick;
+    div.className='cmsg';
+    div.innerHTML=`<div class="cav">${m.nick.charAt(0).toUpperCase()}</div><div class="cbi"><div class="cmeta"><span class="cn">${m.nick}</span> · ${ft(m.time)}</div><div class="ctxt">${esc(m.text)}</div></div>`;
+  }
+  c.appendChild(div);c.scrollTop=c.scrollHeight;
+}
+function sendChat(){
+  if(!CU)return;
+  const i=document.getElementById('chatinp');const t=i.value.trim();if(!t)return;
+  addChat({nick:CU.nick,text:t,time:Date.now()});i.value='';
+}
+function ft(ts){const d=new Date(ts);return p2(d.getHours())+':'+p2(d.getMinutes());}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ============================================================
+// USERS
+// ============================================================
+function renderUsers(){
+  const el=document.getElementById('userslist');if(!el)return;
+  DB.ref('users').orderByChild('totalTime').once('value',snap=>{
+    const d=snap.val()||{};
+    const users=Object.values(d).sort((a,b)=>(b.totalTime||0)-(a.totalTime||0));
+    el.innerHTML=users.map(u=>`<div class="urow"><div class="udot${u.online?'':' off'}"></div><div class="unick">${u.nick}${u.age?' ('+u.age+')':''}</div><div class="utime">⏱ ${fmtD(u.totalTime||0)}</div></div>`).join('');
+  });
+}
+function fmtD(s){if(s<60)return s+'с';if(s<3600)return Math.floor(s/60)+'м '+s%60+'с';return Math.floor(s/3600)+'ч '+Math.floor(s%3600/60)+'м';}
+
+// ============================================================
+// TERMINAL
+// ============================================================
+function openAauth(){document.getElementById('aauth').classList.add('show');document.getElementById('apass').focus();document.getElementById('apass').value='';document.getElementById('aperr').style.display='none';}
+function closeAauth(){document.getElementById('aauth').classList.remove('show');}
+function chkPass(){
+  if(document.getElementById('apass').value==='1991'){closeAauth();go('terminal');renderTNFTs();}
+  else{document.getElementById('aperr').style.display='block';document.getElementById('apass').value='';}
+}
+
+// NEW CASE
+function toggleNewCase(){
+  const f=document.getElementById('newcase-form');f.classList.toggle('show');
+  if(f.classList.contains('show')){ncNFTs=[];renderNewCaseNFTs();}
+}
+function renderNewCaseNFTs(){
+  const el=document.getElementById('nc-nfts');if(!el)return;
+  el.innerHTML=ncNFTs.map((n,i)=>`
+    <div class="newcase-nft-item">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input class="tni" type="text" value="${n.name}" placeholder="Название NFT" oninput="ncNFTs[${i}].name=this.value" style="flex:2;min-width:160px">
+        <input class="tni" type="number" value="${n.price}" placeholder="Цена ★" oninput="ncNFTs[${i}].price=parseInt(this.value)||0" style="width:130px">
+        <input class="tni" type="number" value="${n.mk}" placeholder="Наценка" step="0.01" oninput="ncNFTs[${i}].mk=parseFloat(this.value)||1.12" style="width:90px">
+        <input class="tni" type="number" value="${n.prob}" placeholder="%" step="0.01" oninput="ncNFTs[${i}].prob=parseFloat(this.value)||0" style="width:80px">
+        <button class="btn bd bs" onclick="removeNCNFT(${i})">✕</button>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <input type="file" accept="image/*" id="ncf-${i}" style="display:none" onchange="handleNCPhoto(${i},this)">
+        <button class="btn bo bs" onclick="document.getElementById('ncf-${i}').click()">📷 Фото</button>
+        <span style="font-size:10px;color:var(--gray)" id="ncf-lbl-${i}">${n.img?'✓ фото загружено':'нет фото'}</span>
+      </div>
+    </div>`).join('');
+}
+function addNFTToNewCase(){
+  ncNFTs.push({name:'',price:0,mk:1.12,prob:0,img:''});
+  renderNewCaseNFTs();
+}
+function removeNCNFT(i){ncNFTs.splice(i,1);renderNewCaseNFTs();}
+function handleNCPhoto(i,inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{ncNFTs[i].img=e.target.result;const l=document.getElementById('ncf-lbl-'+i);if(l)l.textContent='✓ фото загружено';};
+  r.readAsDataURL(f);
+}
+function createNewCase(){
+  const name=document.getElementById('nc-name').value.trim();
+  if(!name){toast('Введи название кейса!');return;}
+  if(!ncNFTs.length){toast('Добавь хотя бы один NFT!');return;}
+  const maxId=Math.max(...ND.map(n=>n.id),100);
+  const newNFTs=ncNFTs.map((n,i)=>({...n,id:maxId+i+1,case:name}));
+  newNFTs.forEach(n=>ND.push(n));
+  DB.ref('settings/newNFTs').once('value',snap=>{
+    const existing=snap.val()||[];
+    DB.ref('settings/newNFTs').set([...existing,...newNFTs]);
+  });
+  toast('Кейс "'+name+'" создан с '+newNFTs.length+' NFT!');
+  toggleNewCase();
+  document.getElementById('nc-name').value='';
+  renderTNFTs();
+}
+
+function renderTNFTs(){
+  const q=(document.getElementById('tnfsearch')?.value||'').toLowerCase();
+  const el=document.getElementById('tnflist');if(!el)return;
+  const d=q?ND.filter(n=>n.name.toLowerCase().includes(q)):ND;
+  el.innerHTML=d.map(n=>`<div>
+    <div class="tnrow">
+      <div class="tnnm">${n.name}<br><span style="font-size:9px;color:var(--gray)">${n.case}</span></div>
+      <input class="tni" type="text" id="tnn-${n.id}" value="${n.name}" placeholder="Название">
+      <input class="tni" type="number" id="tnp-${n.id}" value="${n.price}" placeholder="Цена">
+      <input class="tni" type="number" id="tnm-${n.id}" value="${n.mk||1.12}" step="0.01" placeholder="Наценка">
+      <button class="btn bo bs" onclick="togTP(${n.id})">📷</button>
+    </div>
+    <div class="tpwrap" id="tpw-${n.id}">
+      <div style="display:flex;gap:8px;align-items:center">
+        <img class="tpprev${n.img?' show':''}" id="tpp-${n.id}" src="${n.img||''}">
+        <div>
+          <input type="file" accept="image/*" id="tpf-${n.id}" style="display:none" onchange="hTP(${n.id},this)">
+          <button class="btn bo bs" onclick="document.getElementById('tpf-${n.id}').click()">ЗАГРУЗИТЬ</button>
+          <button class="btn bd bs" onclick="delTP(${n.id})" style="margin-left:4px">✕</button>
+        </div>
+      </div>
+      <div class="slrow" style="margin-top:6px">
+        <span style="font-size:10px;color:var(--text2)">РАЗМЕР:</span>
+        <input type="range" min="50" max="200" value="${Math.round((PD['sc_'+n.id]||1)*100)}" oninput="updSc(${n.id},this.value)">
+        <span id="scl-${n.id}">${Math.round((PD['sc_'+n.id]||1)*100)}%</span>
+      </div>
+    </div>
+  </div>`).join('');
+}
+function togTP(id){const e=document.getElementById('tpw-'+id);if(e)e.classList.toggle('show');}
+function hTP(id,inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    PD[id]=e.target.result;
+    const n=ND.find(x=>x.id===id);if(n)n.img=e.target.result;
+    const p=document.getElementById('tpp-'+id);if(p){p.src=e.target.result;p.classList.add('show');}
+    toast('Фото загружено');
+  };r.readAsDataURL(f);
+}
+function delTP(id){delete PD[id];const n=ND.find(x=>x.id===id);if(n)n.img='';const p=document.getElementById('tpp-'+id);if(p){p.src='';p.classList.remove('show');}toast('Фото удалено');}
+function updSc(id,v){PD['sc_'+id]=v/100;const l=document.getElementById('scl-'+id);if(l)l.textContent=v+'%';}
+
+function renderUsersAdmin(){
+  const el=document.getElementById('tadminusers');if(!el)return;
+  DB.ref('users').once('value',snap=>{
+    const d=snap.val()||{};
+    const users=Object.values(d);
+    if(!users.length){el.innerHTML='<div style="font-size:12px;color:var(--text2)">Нет игроков</div>';return;}
+    el.innerHTML=users.map(u=>`<div class="tnrow">
+      <div class="tnnm">${u.nick}${u.age?' ('+u.age+')':''} ${u.online?'<span style="color:var(--green)">●</span>':''}</div>
+      <div style="font-size:10px;color:var(--gray);margin-right:auto">⏱ ${fmtD(u.totalTime||0)}</div>
+      <button class="btn bd bs" onclick="deleteUser('${u.nick}')">УДАЛИТЬ</button>
+    </div>`).join('');
+  });
+}
+function deleteUser(nick){
+  if(!confirm('Удалить '+nick+'?'))return;
+  DB.ref('users/'+nick).remove();
+  toast('Аккаунт '+nick+' удалён');
+  setTimeout(renderUsersAdmin,500);
+}
+
+function saveRts(){
+  R.tonToStars=parseFloat(document.getElementById('trts').value)||900;
+  R.gemsToStars=parseFloat(document.getElementById('trgs').value)||750;
+  R.tonToGems=parseFloat(document.getElementById('trtg').value)||8;
+  updRD();
+}
+function saveNFTs(){
+  ND.forEach(n=>{
+    const nn=document.getElementById('tnn-'+n.id);
+    const np=document.getElementById('tnp-'+n.id);
+    const nm=document.getElementById('tnm-'+n.id);
+    if(nn)n.name=nn.value||n.name;
+    if(np)n.price=parseInt(np.value)||n.price;
+    if(nm)n.mk=parseFloat(nm.value)||n.mk;
+  });
+}
+function sendAnn(){
+  const t=document.getElementById('tann').value.trim();if(!t)return;
+  addChat({nick:'📢 ОБЪЯВЛЕНИЕ',text:t,time:Date.now()});
+  document.getElementById('tann').value='';toast('Отправлено');
+}
+function saveAll(){
+  saveRts();saveNFTs();
+  const data={
+    rates:R,
+    nftPrices:ND.map(n=>({id:n.id,name:n.name,price:n.price,mk:n.mk,case:n.case,prob:n.prob,img:n.img||''}))
+  };
+  DB.ref('settings').set(data).then(()=>{
+    const s=document.getElementById('tsavest');
+    if(s)s.textContent='✓ СОХРАНЕНО ДЛЯ ВСЕХ: '+new Date().toLocaleTimeString();
+    toast('Сохранено для всех!');
+  }).catch(e=>{toast('Ошибка: '+e.message);});
+}
+function resetAll(){
+  if(!confirm('Сбросить ВСЕ данные Firebase?'))return;
+  DB.ref('settings').remove();
+  toast('Сброшено');setTimeout(()=>location.reload(),1000);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastT;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ============================================================
+// AUTO LOGIN
+// ============================================================
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAauth();});
+(function(){
+  const cur=localStorage.getItem('nfb_cur');
+  if(cur){
+    CU={nick:cur};SS=Date.now();
+    document.getElementById('hnick').textContent=cur;
+    document.getElementById('reg-overlay').style.display='none';
+    DB.ref('users/'+cur).update({online:true,lastSeen:Date.now()});
+    startFirebaseListeners();
+    updTNotifs();
+    setInterval(updTimer,1000);
+    setInterval(saveSess,30000);
+  }
+})();
+</script>
+</body>
+</html>
